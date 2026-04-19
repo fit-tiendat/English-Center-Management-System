@@ -4,8 +4,6 @@
 
 ---
 
-## Master Checklist
-
 ### Planning & Setup
 - [x] Xác định mục tiêu project
 - [x] Chốt tech stack
@@ -16,22 +14,22 @@
 ### Backend
 - [x] Setup Express server + MongoDB connection
 - [x] Model: courses
-- [x] Model: teachers
-- [x] Model: students
+- [x] Model: teachers (+ unique email/phone, specialties enum)
+- [x] Model: students (+ unique email/phone, level enum, dateOfBirth validator)
 - [x] Model: classes
 - [x] Routes: courses CRUD
-- [x] Routes: teachers CRUD
-- [x] Routes: students CRUD
+- [x] Routes: teachers CRUD (+ derived status, classCount, duplicate handling)
+- [x] Routes: students CRUD (+ derived status, classCount, duplicate handling)
 - [x] Routes: classes CRUD
 
 ### Frontend
-- [x] CSS chung (style.css)
-- [x] JS shared (shared.js)
+- [x] CSS chung (style.css + filter chips)
+- [x] JS shared (shared.js + validation helpers)
 - [x] index.html (dashboard navigation)
-- [x] courses.html + courses.js
-- [x] teachers.html + teachers.js
-- [x] students.html + students.js
-- [x] classes.html + classes.js
+- [x] courses.html + courses.js (+ level filter chips)
+- [x] teachers.html + teachers.js (+ specialties dropdown, status filter chips)
+- [x] students.html + students.js (+ status filter chips)
+- [x] classes.html + classes.js (+ dual filter: course + status)
 
 ### Integration
 - [x] Classes: gán teacher (dropdown)
@@ -43,6 +41,9 @@
 - [x] MVP final review
 - [x] Bug fixes từ review
 - [x] Deploy preparation refactor
+- [x] Business logic refactor (derived status, validation)
+- [x] Data integrity (unique constraints, enum validation)
+- [x] Filter chips UI (all 4 modules)
 
 ### Deploy
 - [x] Backend deploy-ready (conditional dotenv, static, CORS note)
@@ -64,27 +65,122 @@
 - ✅ Backend: 4 Mongoose models, 4 bộ CRUD routes (20 endpoints)
 - ✅ Frontend: 5 trang HTML, CSS design system, shared utilities
 - ✅ Classes module: populate refs, dropdown courses/teachers, checkbox students
-- ✅ Validation: required fields, email regex, endDate >= startDate, students <= maxStudents
+- ✅ Validation: required fields, email regex, phone regex (9-11 digits), dateOfBirth (not future), level enum (A1-C1), specialties enum (IELTS/TOEIC/Giao tiếp/VSTEP), fee (non-negative), maxStudents (positive integer)
+- ✅ Unique constraints: email + phone cho teachers và students
+- ✅ Derived status: teacher/student status tự động suy ra từ class enrollment
+- ✅ Filter chips: 4 module với counters, empty states, client-side filtering
 - ✅ Response format nhất quán: `{ success, data/message }`
-- ✅ Error handling: try/catch mọi route + frontend fetch
-- ✅ UI: nav bar, form add/edit toggle, data table, badges, toast notifications
+- ✅ Error handling: try/catch mọi route + duplicate key handling + frontend fetch
+- ✅ UI: nav bar, form add/edit toggle, data table, badges, toast notifications, filter chips
 
 ### Hạn chế hiện tại
 - ❌ Không có authentication
-- ❌ Không có tìm kiếm, lọc, phân trang
-- ❌ Không validate trùng email (chưa set unique index)
-- ❌ Xóa course/teacher đang ref bởi class không có cảnh báo
+- ❌ Xóa course/teacher đang ref bởi class không có cảnh báo (cascade check)
+- ❌ Không có pagination (OK cho MVP, data nhỏ)
 
 ### Nâng cấp hợp lý tiếp theo
-1. Unique email index cho teachers/students
-2. Cascade check khi xóa course/teacher
-3. Dashboard thống kê
-4. Search/filter/pagination
-5. Authentication (JWT)
+1. Cascade check khi xóa course/teacher
+2. Dashboard thống kê
+3. Search text
+4. Authentication (JWT)
 
 ---
 
 ## Changelog
+
+### 2026-04-19 — Filter Chips UI (4 modules) ✅
+
+**Mục tiêu:** Thêm filter chips / pill buttons cho tất cả 4 trang CRUD để dễ lọc dữ liệu.
+
+**Tính năng:**
+- Filter 100% client-side (load data 1 lần → filter trên frontend → re-render)
+- Counter `(n)` trên mỗi chip
+- Active state nổi bật (xanh đậm), hover effect
+- Empty state khi filter không có kết quả
+
+**Filter theo trang:**
+
+| Trang | Filter chips |
+|---|---|
+| Teachers | Tất cả · Đang dạy · Chưa phân công · Dạy nhiều lớp |
+| Students | Tất cả · Đang học · Chưa xếp lớp · Học nhiều lớp |
+| Courses | Tất cả · A1 · A2 · B1 · B2 · C1 |
+| Classes | Row 1: Khóa học (dynamic từ courses) · Row 2: Trạng thái (Sắp mở · Đang học · Hoàn thành · Đã hủy) |
+
+**Backend hỗ trợ:**
+- `teacher-routes.js` + `student-routes.js`: thêm `classCount` (tổng số class) trong `addDerivedStatus()` helper
+- Cho phép frontend filter "Dạy nhiều lớp" / "Học nhiều lớp" (classCount >= 2)
+
+**Files sửa (13 files):**
+- `backend/routes/teacher-routes.js` — addDerivedStatus + classCount
+- `backend/routes/student-routes.js` — addDerivedStatus + classCount
+- `frontend/css/style.css` — filter chip CSS (.filter-section, .filter-chip, .badge-warning)
+- `frontend/teachers.html` — filter container + specialties dropdown
+- `frontend/students.html` — filter container
+- `frontend/courses.html` — filter container
+- `frontend/classes.html` — filter container
+- `frontend/js/teachers.js` — full rewrite with filter logic
+- `frontend/js/students.js` — full rewrite with filter logic
+- `frontend/js/courses.js` — full rewrite with filter logic
+- `frontend/js/classes.js` — full rewrite with dual filter (course + status, combinable)
+
+---
+
+### 2026-04-19 — Unique Constraints + Specialties Enum + Duplicate Handling ✅
+
+**Mục tiêu:** Đảm bảo data integrity — không trùng email/phone, chuyên môn chỉ chọn từ enum.
+
+**Thay đổi:**
+
+| Thay đổi | Chi tiết |
+|---|---|
+| `email: unique: true` | teacher-model.js, student-model.js |
+| `phone: unique: true` | teacher-model.js, student-model.js |
+| Specialties: `[String]` array → `String` enum | Chỉ chấp nhận: IELTS, TOEIC, Giao tiếp, VSTEP |
+| Duplicate error handling | `error.code === 11000` → "Email đã tồn tại" / "Số điện thoại đã tồn tại" |
+| HTML specialties | `<input type="text">` → `<select>` dropdown |
+
+**Files sửa:**
+- `backend/models/teacher-model.js` — unique email/phone, specialties enum
+- `backend/models/student-model.js` — unique email/phone
+- `backend/routes/teacher-routes.js` — error.code 11000 handling
+- `backend/routes/student-routes.js` — error.code 11000 handling
+- `frontend/teachers.html` — specialties select dropdown
+
+---
+
+### 2026-04-19 — Business Logic Refactor + Validation ✅
+
+**Mục tiêu:** Sửa logic nghiệp vụ sai — status không hard-code, validation chặt hơn.
+
+**Quyết định thiết kế:**
+
+| Quy tắc | Logic |
+|---|---|
+| Teacher status | **Derived** — "Đang dạy" nếu gán vào ≥1 class ongoing, else "Chưa phân công" |
+| Student status | **Derived** — "Đang học" nếu nằm trong ≥1 class ongoing, else "Chưa xếp lớp" |
+| Phone | Regex `^\d{9,11}$` — chỉ chữ số, 9-11 ký tự |
+| DateOfBirth | Custom validator — không được ở tương lai |
+| Level (student) | Enum: A1, A2, B1, B2, C1 |
+| Fee (course) | Non-negative number |
+| maxStudents (class) | Positive integer |
+
+**Validation 2 lớp:**
+- Frontend: `isValidPhone()`, `isDateNotFuture()`, `isPositiveInteger()`, `isNonNegativeNumber()` trong shared.js
+- Backend: Mongoose schema validators (match, enum, custom validate)
+
+**Files sửa:**
+- `backend/models/teacher-model.js` — phone regex
+- `backend/models/student-model.js` — phone regex, dateOfBirth validator, level enum
+- `backend/routes/teacher-routes.js` — derived status from classes
+- `backend/routes/student-routes.js` — derived status from classes
+- `frontend/js/shared.js` — 4 validation helpers
+- `frontend/js/teachers.js` — phone validation + derivedStatus display
+- `frontend/js/students.js` — phone + DOB validation + derivedStatus display
+- `frontend/js/courses.js` — fee validation
+- `frontend/js/classes.js` — empty state + maxStudents + all required field validation
+
+---
 
 ### 2026-04-19 — Cloud Deployment (Atlas + Railway) ✅
 
