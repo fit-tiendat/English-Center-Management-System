@@ -9,7 +9,7 @@
   Cách dùng: trước khi deploy lên Vercel, đổi BACKEND_URL thành URL backend Railway.
   VD: 'https://your-app.up.railway.app'
 */
-const BACKEND_URL = ''; // ← Production: đổi thành Railway URL, VD: 'https://abc.up.railway.app'
+const BACKEND_URL = 'https://english-center-management-system-production.up.railway.app'; // Railway backend
 const API_BASE = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
 
 /**
