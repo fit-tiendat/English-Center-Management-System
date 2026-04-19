@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
-// Load .env ở local dev — Railway inject env tự động
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Load .env nếu file tồn tại (local dev) — production (Railway) inject env tự động
+const envPath = path.join(__dirname, '..', '.env');
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
 }
 
 const connectDB = require('./config/db');
@@ -13,7 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // MVP: mở cho tất cả origins — xem ghi chú bên dưới
+app.use(cors()); // MVP: mở cho tất cả origins
 app.use(express.json());
 
 /*
@@ -24,10 +26,11 @@ app.use(express.json());
   }));
 */
 
-// Serve static files — chỉ dùng ở local dev
-// Production: frontend deploy riêng trên Vercel
-if (process.env.NODE_ENV !== 'production') {
-  app.use(express.static(path.join(__dirname, '..', 'frontend')));
+// Serve static files — chỉ khi thư mục frontend tồn tại (local dev)
+// Production (Railway): chỉ deploy backend/, không có frontend/
+const frontendPath = path.join(__dirname, '..', 'frontend');
+if (fs.existsSync(frontendPath)) {
+  app.use(express.static(frontendPath));
 }
 
 // Routes
@@ -44,6 +47,6 @@ app.get('/api/health', (req, res) => {
 // Kết nối MongoDB rồi start server
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    console.log(`Server running on port ${PORT}`);
   });
 });
