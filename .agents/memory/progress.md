@@ -49,8 +49,11 @@
 - [x] Frontend deploy-ready (configurable BACKEND_URL)
 - [x] .env.example updated
 - [x] README.md created
-- [ ] MongoDB Atlas setup
-- [ ] Backend deployed to Railway
+- [x] .gitignore + .vercelignore
+- [x] Push GitHub
+- [x] MongoDB Atlas cluster + whitelist IP
+- [x] Backend deployed to Railway (ACTIVE)
+- [x] BACKEND_URL set in shared.js
 - [ ] Frontend deployed to Vercel
 
 ---
@@ -71,7 +74,6 @@
 - ❌ Không có tìm kiếm, lọc, phân trang
 - ❌ Không validate trùng email (chưa set unique index)
 - ❌ Xóa course/teacher đang ref bởi class không có cảnh báo
-- ❌ Chưa có README.md
 
 ### Nâng cấp hợp lý tiếp theo
 1. Unique email index cho teachers/students
@@ -83,6 +85,86 @@
 ---
 
 ## Changelog
+
+### 2026-04-19 — Cloud Deployment (Atlas + Railway) ✅
+
+**Mục tiêu:** Deploy backend lên Railway + kết nối MongoDB Atlas.
+
+**Kiến trúc deploy:**
+```
+GitHub repo
+  ├── backend/  → Railway (https://english-center-management-system-production.up.railway.app)
+  ├── frontend/ → Vercel (chưa deploy)
+  └── DB        → MongoDB Atlas (cluster0.el3y9qi.mongodb.net)
+```
+
+**Các bước đã thực hiện:**
+1. Tạo MongoDB Atlas cluster miễn phí (Cluster0)
+2. Tạo database user + lấy connection string
+3. Test Atlas connection từ local → OK
+4. Push code lên GitHub (`fit-tiendat/English-Center-Management-System`)
+5. Tạo Railway project → link GitHub repo
+6. Set env variables (MONGO_URI, NODE_ENV) + Root Directory = `backend`
+7. Generate public domain + set target port
+8. Set BACKEND_URL trong `shared.js` → push lại
+
+**🐛 Lỗi gặp phải và cách fix:**
+
+| # | Lỗi | Nguyên nhân | Cách fix |
+|---|---|---|---|
+| 1 | **Build failed** lần đầu trên Railway | Chưa set Root Directory = `backend` → Railway chạy từ root, không tìm thấy `package.json` | Set Root Directory = `backend` trong Settings |
+| 2 | **MongoDB connection error** — "Could not connect to any servers in your MongoDB Atlas cluster" | Atlas mặc định chỉ cho phép IP cụ thể. Railway dùng IP động, bị chặn | Vào Atlas → Network Access → Add IP Address → "Allow Access From Anywhere" (0.0.0.0/0) |
+| 3 | **NODE_ENV = "developmentproduction"** (nối sai) → 502 Bad Gateway | Railway auto-detect biến từ `.env.example` (giá trị `development`) rồi nối thêm giá trị user set (`production`) | Fix code: bỏ check `NODE_ENV !== 'production'`, thay bằng `fs.existsSync()` — check file `.env` và thư mục `frontend/` có tồn tại không. Cách này hoạt động đúng bất kể NODE_ENV bị sai |
+
+**Fix quan trọng nhất — `server.js`:**
+```diff
+- // Load .env ở local dev
+- if (process.env.NODE_ENV !== 'production') {
+-   require('dotenv').config(...);
+- }
++ // Load .env nếu file tồn tại (local dev)
++ const envPath = path.join(__dirname, '..', '.env');
++ if (fs.existsSync(envPath)) {
++   require('dotenv').config({ path: envPath });
++ }
+
+- // Serve static files
+- if (process.env.NODE_ENV !== 'production') {
+-   app.use(express.static(...));
+- }
++ // Serve static files — chỉ khi thư mục frontend tồn tại
++ const frontendPath = path.join(__dirname, '..', 'frontend');
++ if (fs.existsSync(frontendPath)) {
++   app.use(express.static(frontendPath));
++ }
+```
+
+**Kết quả cuối:**
+- ✅ Railway: `https://english-center-management-system-production.up.railway.app`
+- ✅ Health check: `GET /api/health` → `{success: true, env: "production"}`
+- ✅ API hoạt động: `GET /api/courses` → `{success: true, data: []}`
+- ✅ `BACKEND_URL` đã set trong `shared.js`
+- ⏳ Vercel frontend: chưa deploy
+
+**Files sửa:**
+- `backend/server.js` — [sửa] — `fs.existsSync` thay NODE_ENV check
+- `frontend/js/shared.js` — [sửa] — Set BACKEND_URL = Railway URL
+
+**Bài học rút ra:**
+- ⚠️ Railway auto-detect biến môi trường từ code → có thể nối sai giá trị
+- ⚠️ Không nên dựa vào NODE_ENV cho logic runtime quan trọng — dùng `fs.existsSync` an toàn hơn
+- ⚠️ MongoDB Atlas mặc định chặn IP → phải whitelist trước khi deploy
+
+---
+
+### 2026-04-19 — Repository Cleanup & Deploy Ignore ✅
+
+**Đã làm:**
+- `.gitignore`: thêm `.env.local`, `.env.*.local`, `.vercel`, `.DS_Store`, `Thumbs.db`, `.vscode/`, `.idea/`, `*.log`
+- `.vercelignore`: tạo mới — ignore `backend/`, `.agents/`, root configs
+- Verify: `.env` không bị git track, không có secret trong repo
+
+---
 
 ### 2026-04-19 — Deploy Preparation Refactor ✅
 
