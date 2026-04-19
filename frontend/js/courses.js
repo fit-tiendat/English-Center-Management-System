@@ -59,12 +59,20 @@ async function loadCourses() {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const feeRaw = document.getElementById('fee').value;
+
+  // --- Client-side validation ---
+  if (!isNonNegativeNumber(feeRaw)) {
+    showToast('Học phí phải là số không âm', 'error');
+    return;
+  }
+
   const data = {
     name: document.getElementById('name').value.trim(),
     description: document.getElementById('description').value.trim(),
     level: document.getElementById('level').value,
     duration: document.getElementById('duration').value.trim(),
-    fee: Number(document.getElementById('fee').value),
+    fee: Number(feeRaw),
   };
 
   let result;

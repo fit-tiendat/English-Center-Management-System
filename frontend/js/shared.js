@@ -91,3 +91,30 @@ function renderNav(activePage) {
 function formatCurrency(amount) {
   return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
 }
+
+/* ========================================
+   Validation helpers — dùng chung
+   ======================================== */
+
+/** Kiểm tra số điện thoại: chỉ chữ số, 9-11 ký tự */
+function isValidPhone(phone) {
+  return /^\d{9,11}$/.test(phone);
+}
+
+/** Kiểm tra ngày không ở tương lai */
+function isDateNotFuture(dateStr) {
+  if (!dateStr) return true;
+  return new Date(dateStr) <= new Date();
+}
+
+/** Kiểm tra số nguyên dương */
+function isPositiveInteger(value) {
+  const n = Number(value);
+  return Number.isInteger(n) && n > 0;
+}
+
+/** Kiểm tra số không âm */
+function isNonNegativeNumber(value) {
+  const n = Number(value);
+  return !isNaN(n) && n >= 0;
+}

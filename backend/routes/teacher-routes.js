@@ -1,25 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const Teacher = require('../models/teacher-model');
+const Class = require('../models/class-model');
 
-// GET /api/teachers — Lấy tất cả teachers
+// Helper: tính derived status cho teachers
+async function addDerivedStatus(teachers) {
+  const ongoingClasses = await Class.find({ status: 'ongoing' }).select('teacher');
+  const activeTeacherIds = new Set(ongoingClasses.map((c) => c.teacher.toString()));
+
+  return teachers.map((t) => {
+    const obj = t.toObject();
+    obj.derivedStatus = activeTeacherIds.has(t._id.toString()) ? 'Đang dạy' : 'Chưa phân công';
+    return obj;
+  });
+}
+
+// GET /api/teachers — Lấy tất cả teachers (kèm derived status)
 router.get('/', async (req, res) => {
   try {
     const teachers = await Teacher.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: teachers });
+    const data = await addDerivedStatus(teachers);
+    res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// GET /api/teachers/:id — Lấy 1 teacher theo ID
+// GET /api/teachers/:id — Lấy 1 teacher theo ID (kèm derived status)
 router.get('/:id', async (req, res) => {
   try {
     const teacher = await Teacher.findById(req.params.id);
     if (!teacher) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy giảng viên' });
     }
-    res.json({ success: true, data: teacher });
+    const [data] = await addDerivedStatus([teacher]);
+    res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

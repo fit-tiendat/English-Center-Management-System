@@ -40,8 +40,8 @@ async function loadTeachers() {
       <td>${t.phone}</td>
       <td>${t.specialties.length > 0 ? t.specialties.join(', ') : '<span class="text-muted">—</span>'}</td>
       <td>
-        <span class="badge ${t.isActive ? 'badge-active' : 'badge-inactive'}">
-          ${t.isActive ? 'Đang dạy' : 'Nghỉ'}
+        <span class="badge ${t.derivedStatus === 'Đang dạy' ? 'badge-active' : 'badge-inactive'}">
+          ${t.derivedStatus}
         </span>
       </td>
       <td>
@@ -64,10 +64,18 @@ form.addEventListener('submit', async (e) => {
     ? specialtiesRaw.split(',').map((s) => s.trim()).filter((s) => s)
     : [];
 
+  const phone = document.getElementById('phone').value.trim();
+
+  // --- Client-side validation ---
+  if (!isValidPhone(phone)) {
+    showToast('Số điện thoại phải có 9-11 chữ số, không chứa chữ cái', 'error');
+    return;
+  }
+
   const data = {
     fullName: document.getElementById('fullName').value.trim(),
     email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
+    phone,
     specialties,
   };
 

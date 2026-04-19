@@ -1,25 +1,41 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/student-model');
+const Class = require('../models/class-model');
 
-// GET /api/students — Lấy tất cả students
+// Helper: tính derived status cho students
+async function addDerivedStatus(students) {
+  const ongoingClasses = await Class.find({ status: 'ongoing' }).select('students');
+  const activeStudentIds = new Set();
+  ongoingClasses.forEach((c) => c.students.forEach((s) => activeStudentIds.add(s.toString())));
+
+  return students.map((s) => {
+    const obj = s.toObject();
+    obj.derivedStatus = activeStudentIds.has(s._id.toString()) ? 'Đang học' : 'Chưa xếp lớp';
+    return obj;
+  });
+}
+
+// GET /api/students — Lấy tất cả students (kèm derived status)
 router.get('/', async (req, res) => {
   try {
     const students = await Student.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: students });
+    const data = await addDerivedStatus(students);
+    res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// GET /api/students/:id — Lấy 1 student theo ID
+// GET /api/students/:id — Lấy 1 student theo ID (kèm derived status)
 router.get('/:id', async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
     if (!student) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy học viên' });
     }
-    res.json({ success: true, data: student });
+    const [data] = await addDerivedStatus([student]);
+    res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

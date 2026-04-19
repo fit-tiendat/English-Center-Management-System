@@ -48,8 +48,8 @@ async function loadStudents() {
       <td>${formatDate(s.dateOfBirth)}</td>
       <td>${s.level}</td>
       <td>
-        <span class="badge ${s.isActive ? 'badge-active' : 'badge-inactive'}">
-          ${s.isActive ? 'Đang học' : 'Nghỉ'}
+        <span class="badge ${s.derivedStatus === 'Đang học' ? 'badge-active' : 'badge-inactive'}">
+          ${s.derivedStatus}
         </span>
       </td>
       <td>
@@ -66,15 +66,28 @@ async function loadStudents() {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const phone = document.getElementById('phone').value.trim();
+  const dob = document.getElementById('dateOfBirth').value;
+
+  // --- Client-side validation ---
+  if (!isValidPhone(phone)) {
+    showToast('Số điện thoại phải có 9-11 chữ số, không chứa chữ cái', 'error');
+    return;
+  }
+
+  if (dob && !isDateNotFuture(dob)) {
+    showToast('Ngày sinh không được ở tương lai', 'error');
+    return;
+  }
+
   const data = {
     fullName: document.getElementById('fullName').value.trim(),
     email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
+    phone,
     level: document.getElementById('level').value,
   };
 
   // Chỉ gửi dateOfBirth nếu có nhập
-  const dob = document.getElementById('dateOfBirth').value;
   if (dob) data.dateOfBirth = dob;
 
   let result;

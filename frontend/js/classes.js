@@ -46,6 +46,14 @@ async function loadCourseOptions() {
   const result = await fetchJSON(COURSES_URL);
   if (!result.success) return;
 
+  if (result.data.length === 0) {
+    courseSelect.innerHTML = '<option value="">Chưa có khóa học — hãy tạo khóa học trước</option>';
+    btnSubmit.disabled = true;
+    btnSubmit.title = 'Cần tạo khóa học trước';
+    showToast('Bạn cần tạo khóa học trước khi tạo lớp học.', 'error');
+    return;
+  }
+
   courseSelect.innerHTML = '<option value="">-- Chọn khóa học --</option>';
   result.data.forEach((c) => {
     courseSelect.innerHTML += `<option value="${c._id}">${c.name} (${c.level})</option>`;
@@ -55,6 +63,14 @@ async function loadCourseOptions() {
 async function loadTeacherOptions() {
   const result = await fetchJSON(TEACHERS_URL);
   if (!result.success) return;
+
+  if (result.data.length === 0) {
+    teacherSelect.innerHTML = '<option value="">Chưa có giảng viên — hãy tạo giảng viên trước</option>';
+    btnSubmit.disabled = true;
+    btnSubmit.title = 'Cần tạo giảng viên trước';
+    showToast('Bạn cần tạo giảng viên trước khi gán lớp học.', 'error');
+    return;
+  }
 
   teacherSelect.innerHTML = '<option value="">-- Chọn giảng viên --</option>';
   result.data.forEach((t) => {
@@ -168,7 +184,15 @@ form.addEventListener('submit', async (e) => {
   }
 
   const selectedStudents = getSelectedStudentIds();
-  const maxStudents = Number(document.getElementById('maxStudents').value);
+  const maxStudentsRaw = document.getElementById('maxStudents').value;
+
+  // Client-side validation: maxStudents
+  if (!isPositiveInteger(maxStudentsRaw)) {
+    showToast('Sĩ số tối đa phải là số nguyên dương', 'error');
+    return;
+  }
+
+  const maxStudents = Number(maxStudentsRaw);
 
   // Client-side validation: student count <= maxStudents
   if (selectedStudents.length > maxStudents) {

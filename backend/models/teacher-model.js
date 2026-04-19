@@ -18,6 +18,7 @@ const teacherSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Số điện thoại là bắt buộc'],
       trim: true,
+      match: [/^\d{9,11}$/, 'Số điện thoại phải có 9-11 chữ số'],
     },
     specialties: {
       type: [String],
