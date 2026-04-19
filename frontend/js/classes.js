@@ -174,19 +174,49 @@ async function loadClasses() {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const name = document.getElementById('name').value.trim();
+  const course = document.getElementById('course').value;
+  const teacher = document.getElementById('teacher').value;
+  const schedule = document.getElementById('schedule').value.trim();
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
+  const maxStudentsRaw = document.getElementById('maxStudents').value;
+  const status = document.getElementById('status').value;
+  const selectedStudents = getSelectedStudentIds();
 
-  // Client-side validation: endDate >= startDate
+  // --- Client-side validation ---
+  if (!name) {
+    showToast('Tên lớp học là bắt buộc', 'error');
+    return;
+  }
+  if (!course) {
+    showToast('Vui lòng chọn khóa học', 'error');
+    return;
+  }
+  if (!teacher) {
+    showToast('Vui lòng chọn giảng viên', 'error');
+    return;
+  }
+  if (!schedule) {
+    showToast('Lịch học là bắt buộc', 'error');
+    return;
+  }
+  if (!startDate) {
+    showToast('Ngày bắt đầu là bắt buộc', 'error');
+    return;
+  }
+  if (!endDate) {
+    showToast('Ngày kết thúc là bắt buộc', 'error');
+    return;
+  }
   if (endDate < startDate) {
     showToast('Ngày kết thúc phải sau ngày bắt đầu', 'error');
     return;
   }
-
-  const selectedStudents = getSelectedStudentIds();
-  const maxStudentsRaw = document.getElementById('maxStudents').value;
-
-  // Client-side validation: maxStudents
+  if (!maxStudentsRaw) {
+    showToast('Sĩ số tối đa là bắt buộc', 'error');
+    return;
+  }
   if (!isPositiveInteger(maxStudentsRaw)) {
     showToast('Sĩ số tối đa phải là số nguyên dương', 'error');
     return;
@@ -194,22 +224,20 @@ form.addEventListener('submit', async (e) => {
 
   const maxStudents = Number(maxStudentsRaw);
 
-  // Client-side validation: student count <= maxStudents
   if (selectedStudents.length > maxStudents) {
     showToast(`Số học viên (${selectedStudents.length}) vượt quá sĩ số tối đa (${maxStudents})`, 'error');
     return;
   }
+  if (!status) {
+    showToast('Vui lòng chọn trạng thái', 'error');
+    return;
+  }
 
   const data = {
-    name: document.getElementById('name').value.trim(),
-    course: document.getElementById('course').value,
-    teacher: document.getElementById('teacher').value,
+    name, course, teacher,
     students: selectedStudents,
-    schedule: document.getElementById('schedule').value.trim(),
-    startDate,
-    endDate,
-    maxStudents,
-    status: document.getElementById('status').value,
+    schedule, startDate, endDate,
+    maxStudents, status,
   };
 
   let result;

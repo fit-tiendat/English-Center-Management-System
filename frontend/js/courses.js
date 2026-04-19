@@ -59,21 +59,35 @@ async function loadCourses() {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const name = document.getElementById('name').value.trim();
+  const level = document.getElementById('level').value;
+  const duration = document.getElementById('duration').value.trim();
   const feeRaw = document.getElementById('fee').value;
+  const description = document.getElementById('description').value.trim();
 
   // --- Client-side validation ---
+  if (!name) {
+    showToast('Tên khóa học là bắt buộc', 'error');
+    return;
+  }
+  if (!level) {
+    showToast('Vui lòng chọn trình độ', 'error');
+    return;
+  }
+  if (!duration) {
+    showToast('Thời lượng là bắt buộc', 'error');
+    return;
+  }
+  if (!feeRaw && feeRaw !== '0') {
+    showToast('Học phí là bắt buộc', 'error');
+    return;
+  }
   if (!isNonNegativeNumber(feeRaw)) {
     showToast('Học phí phải là số không âm', 'error');
     return;
   }
 
-  const data = {
-    name: document.getElementById('name').value.trim(),
-    description: document.getElementById('description').value.trim(),
-    level: document.getElementById('level').value,
-    duration: document.getElementById('duration').value.trim(),
-    fee: Number(feeRaw),
-  };
+  const data = { name, description, level, duration, fee: Number(feeRaw) };
 
   let result;
 

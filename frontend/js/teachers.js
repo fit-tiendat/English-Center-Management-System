@@ -64,20 +64,29 @@ form.addEventListener('submit', async (e) => {
     ? specialtiesRaw.split(',').map((s) => s.trim()).filter((s) => s)
     : [];
 
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
   const phone = document.getElementById('phone').value.trim();
 
   // --- Client-side validation ---
+  if (!fullName) {
+    showToast('Họ và tên là bắt buộc', 'error');
+    return;
+  }
+  if (!email) {
+    showToast('Email là bắt buộc', 'error');
+    return;
+  }
+  if (!phone) {
+    showToast('Số điện thoại là bắt buộc', 'error');
+    return;
+  }
   if (!isValidPhone(phone)) {
     showToast('Số điện thoại phải có 9-11 chữ số, không chứa chữ cái', 'error');
     return;
   }
 
-  const data = {
-    fullName: document.getElementById('fullName').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone,
-    specialties,
-  };
+  const data = { fullName, email, phone, specialties };
 
   let result;
 

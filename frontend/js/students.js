@@ -66,26 +66,39 @@ async function loadStudents() {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const dob = document.getElementById('dateOfBirth').value;
+  const level = document.getElementById('level').value;
 
   // --- Client-side validation ---
+  if (!fullName) {
+    showToast('Họ và tên là bắt buộc', 'error');
+    return;
+  }
+  if (!email) {
+    showToast('Email là bắt buộc', 'error');
+    return;
+  }
+  if (!phone) {
+    showToast('Số điện thoại là bắt buộc', 'error');
+    return;
+  }
   if (!isValidPhone(phone)) {
     showToast('Số điện thoại phải có 9-11 chữ số, không chứa chữ cái', 'error');
     return;
   }
-
+  if (!level) {
+    showToast('Vui lòng chọn trình độ', 'error');
+    return;
+  }
   if (dob && !isDateNotFuture(dob)) {
     showToast('Ngày sinh không được ở tương lai', 'error');
     return;
   }
 
-  const data = {
-    fullName: document.getElementById('fullName').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone,
-    level: document.getElementById('level').value,
-  };
+  const data = { fullName, email, phone, level };
 
   // Chỉ gửi dateOfBirth nếu có nhập
   if (dob) data.dateOfBirth = dob;
