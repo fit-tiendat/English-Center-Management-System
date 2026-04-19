@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Học viên — English Center</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="container">
+    <h1 class="page-title">🎓 Quản lý Học viên</h1>
+
+    <!-- Form thêm / sửa -->
+    <div class="card">
+      <h2 class="card-title" id="form-title">Thêm học viên mới</h2>
+      <form id="student-form" class="form-grid">
+        <input type="hidden" id="student-id">
+
+        <div class="form-group">
+          <label for="fullName">Họ và tên *</label>
+          <input type="text" id="fullName" placeholder="VD: Trần Thị B" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" placeholder="VD: tranthib@gmail.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Số điện thoại *</label>
+          <input type="text" id="phone" placeholder="VD: 0987654321" required>
+        </div>
+
+        <div class="form-group">
+          <label for="dateOfBirth">Ngày sinh</label>
+          <input type="date" id="dateOfBirth">
+        </div>
+
+        <div class="form-group">
+          <label for="level">Trình độ hiện tại *</label>
+          <select id="level" required>
+            <option value="">-- Chọn trình độ --</option>
+            <option value="A1">A1 - Beginner</option>
+            <option value="A2">A2 - Elementary</option>
+            <option value="B1">B1 - Intermediate</option>
+            <option value="B2">B2 - Upper Intermediate</option>
+            <option value="C1">C1 - Advanced</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="btn-submit">Thêm học viên</button>
+          <button type="button" class="btn btn-secondary" id="btn-cancel" style="display:none;" onclick="cancelEdit()">Hủy</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bảng danh sách -->
+    <div class="card">
+      <h2 class="card-title">Danh sách học viên</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Họ tên</th>
+              <th>Email</th>
+              <th>Điện thoại</th>
+              <th>Ngày sinh</th>
+              <th>Trình độ</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="students-tbody">
+            <tr><td colspan="7" class="text-center text-muted">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/shared.js"></script>
+  <script src="js/students.js"></script>
+</body>
+</html>

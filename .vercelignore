@@ -1,0 +1,8 @@
+# Vercel chỉ deploy thư mục frontend/
+# Ignore backend và các file config root
+backend/
+.agents/
+.env
+.env.example
+.gitignore
+README.md

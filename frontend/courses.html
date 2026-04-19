@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Khóa học — English Center</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="container">
+    <h1 class="page-title">📚 Quản lý Khóa học</h1>
+
+    <!-- Form thêm / sửa -->
+    <div class="card">
+      <h2 class="card-title" id="form-title">Thêm khóa học mới</h2>
+      <form id="course-form" class="form-grid">
+        <input type="hidden" id="course-id">
+
+        <div class="form-group">
+          <label for="name">Tên khóa học *</label>
+          <input type="text" id="name" placeholder="VD: IELTS Foundation 6.0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="level">Trình độ *</label>
+          <select id="level" required>
+            <option value="">-- Chọn trình độ --</option>
+            <option value="A1">A1 - Beginner</option>
+            <option value="A2">A2 - Elementary</option>
+            <option value="B1">B1 - Intermediate</option>
+            <option value="B2">B2 - Upper Intermediate</option>
+            <option value="C1">C1 - Advanced</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="duration">Thời lượng *</label>
+          <input type="text" id="duration" placeholder="VD: 3 tháng, 36 buổi" required>
+        </div>
+
+        <div class="form-group">
+          <label for="fee">Học phí (VND) *</label>
+          <input type="number" id="fee" placeholder="VD: 5000000" min="0" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="description">Mô tả</label>
+          <textarea id="description" placeholder="Mô tả ngắn về khóa học..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="btn-submit">Thêm khóa học</button>
+          <button type="button" class="btn btn-secondary" id="btn-cancel" style="display:none;" onclick="cancelEdit()">Hủy</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bảng danh sách -->
+    <div class="card">
+      <h2 class="card-title">Danh sách khóa học</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Tên khóa học</th>
+              <th>Trình độ</th>
+              <th>Thời lượng</th>
+              <th>Học phí</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="courses-tbody">
+            <tr><td colspan="6" class="text-center text-muted">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/shared.js"></script>
+  <script src="js/courses.js"></script>
+</body>
+</html>

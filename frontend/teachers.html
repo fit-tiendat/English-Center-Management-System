@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Giảng viên — English Center</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="container">
+    <h1 class="page-title">👨‍🏫 Quản lý Giảng viên</h1>
+
+    <!-- Form thêm / sửa -->
+    <div class="card">
+      <h2 class="card-title" id="form-title">Thêm giảng viên mới</h2>
+      <form id="teacher-form" class="form-grid">
+        <input type="hidden" id="teacher-id">
+
+        <div class="form-group">
+          <label for="fullName">Họ và tên *</label>
+          <input type="text" id="fullName" placeholder="VD: Nguyễn Văn A" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" placeholder="VD: nguyenvana@gmail.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Số điện thoại *</label>
+          <input type="text" id="phone" placeholder="VD: 0901234567" required>
+        </div>
+
+        <div class="form-group">
+          <label for="specialties">Chuyên môn</label>
+          <input type="text" id="specialties" placeholder="VD: IELTS, TOEIC, Giao tiếp (phân cách bằng dấu phẩy)">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="btn-submit">Thêm giảng viên</button>
+          <button type="button" class="btn btn-secondary" id="btn-cancel" style="display:none;" onclick="cancelEdit()">Hủy</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bảng danh sách -->
+    <div class="card">
+      <h2 class="card-title">Danh sách giảng viên</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Họ tên</th>
+              <th>Email</th>
+              <th>Điện thoại</th>
+              <th>Chuyên môn</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="teachers-tbody">
+            <tr><td colspan="6" class="text-center text-muted">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/shared.js"></script>
+  <script src="js/teachers.js"></script>
+</body>
+</html>

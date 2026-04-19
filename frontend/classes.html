@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Lớp học — English Center</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Checkbox list cho chọn học viên */
+    .checkbox-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+    .checkbox-list label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 14px;
+      font-weight: 400;
+      color: #334155;
+      cursor: pointer;
+    }
+    .checkbox-list label:hover {
+      color: #2563eb;
+    }
+    .checkbox-list .no-data {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .student-count {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="container">
+    <h1 class="page-title">🏫 Quản lý Lớp học</h1>
+
+    <!-- Form thêm / sửa -->
+    <div class="card">
+      <h2 class="card-title" id="form-title">Tạo lớp học mới</h2>
+      <form id="class-form" class="form-grid">
+        <input type="hidden" id="class-id">
+
+        <div class="form-group">
+          <label for="name">Tên lớp *</label>
+          <input type="text" id="name" placeholder="VD: IELTS-01, TOEIC-A2-03" required>
+        </div>
+
+        <div class="form-group">
+          <label for="course">Khóa học *</label>
+          <select id="course" required>
+            <option value="">-- Chọn khóa học --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="teacher">Giảng viên *</label>
+          <select id="teacher" required>
+            <option value="">-- Chọn giảng viên --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="schedule">Lịch học *</label>
+          <input type="text" id="schedule" placeholder="VD: T2-T4-T6, 18h-20h" required>
+        </div>
+
+        <div class="form-group">
+          <label for="startDate">Ngày bắt đầu *</label>
+          <input type="date" id="startDate" required>
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">Ngày kết thúc *</label>
+          <input type="date" id="endDate" required>
+        </div>
+
+        <div class="form-group">
+          <label for="maxStudents">Sĩ số tối đa *</label>
+          <input type="number" id="maxStudents" placeholder="VD: 25" min="1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Trạng thái</label>
+          <select id="status">
+            <option value="planned">Planned</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Chọn học viên</label>
+          <div class="checkbox-list" id="students-checklist">
+            <span class="no-data">Đang tải danh sách học viên...</span>
+          </div>
+          <div class="student-count" id="student-count">Đã chọn: 0</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="btn-submit">Tạo lớp học</button>
+          <button type="button" class="btn btn-secondary" id="btn-cancel" style="display:none;" onclick="cancelEdit()">Hủy</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bảng danh sách -->
+    <div class="card">
+      <h2 class="card-title">Danh sách lớp học</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Tên lớp</th>
+              <th>Khóa học</th>
+              <th>Giảng viên</th>
+              <th>Sĩ số</th>
+              <th>Lịch học</th>
+              <th>Thời gian</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="classes-tbody">
+            <tr><td colspan="8" class="text-center text-muted">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/shared.js"></script>
+  <script src="js/classes.js"></script>
+</body>
+</html>
