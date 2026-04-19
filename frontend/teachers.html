@@ -34,8 +34,14 @@
         </div>
 
         <div class="form-group">
-          <label for="specialties">Chuyên môn</label>
-          <input type="text" id="specialties" placeholder="VD: IELTS, TOEIC, Giao tiếp (phân cách bằng dấu phẩy)">
+          <label for="specialties">Chuyên môn *</label>
+          <select id="specialties" required>
+            <option value="">-- Chọn chuyên môn --</option>
+            <option value="IELTS">IELTS</option>
+            <option value="TOEIC">TOEIC</option>
+            <option value="Giao tiếp">Giao tiếp</option>
+            <option value="VSTEP">VSTEP</option>
+          </select>
         </div>
 
         <div class="form-actions">
@@ -48,6 +54,7 @@
     <!-- Bảng danh sách -->
     <div class="card">
       <h2 class="card-title">Danh sách giảng viên</h2>
+      <div class="filter-section" id="filter-section"></div>
       <div class="table-container">
         <table>
           <thead>

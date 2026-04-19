@@ -12,12 +12,14 @@ const studentSchema = new mongoose.Schema(
       required: [true, 'Email là bắt buộc'],
       trim: true,
       lowercase: true,
+      unique: true,
       match: [/^\S+@\S+\.\S+$/, 'Email không hợp lệ'],
     },
     phone: {
       type: String,
       required: [true, 'Số điện thoại là bắt buộc'],
       trim: true,
+      unique: true,
       match: [/^\d{9,11}$/, 'Số điện thoại phải có 9-11 chữ số'],
     },
     dateOfBirth: {

@@ -3,15 +3,25 @@ const router = express.Router();
 const Student = require('../models/student-model');
 const Class = require('../models/class-model');
 
-// Helper: tính derived status cho students
+// Helper: tính derived status + classCount cho students
 async function addDerivedStatus(students) {
-  const ongoingClasses = await Class.find({ status: 'ongoing' }).select('students');
-  const activeStudentIds = new Set();
-  ongoingClasses.forEach((c) => c.students.forEach((s) => activeStudentIds.add(s.toString())));
+  const allClasses = await Class.find().select('students status');
+  const ongoingStudentIds = new Set();
+  const classCountMap = {};
+
+  allClasses.forEach((c) => {
+    c.students.forEach((sid) => {
+      const id = sid.toString();
+      classCountMap[id] = (classCountMap[id] || 0) + 1;
+      if (c.status === 'ongoing') ongoingStudentIds.add(id);
+    });
+  });
 
   return students.map((s) => {
     const obj = s.toObject();
-    obj.derivedStatus = activeStudentIds.has(s._id.toString()) ? 'Đang học' : 'Chưa xếp lớp';
+    const sid = s._id.toString();
+    obj.derivedStatus = ongoingStudentIds.has(sid) ? 'Đang học' : 'Chưa xếp lớp';
+    obj.classCount = classCountMap[sid] || 0;
     return obj;
   });
 }
@@ -51,6 +61,11 @@ router.post('/', async (req, res) => {
       const messages = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ success: false, message: messages.join(', ') });
     }
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      const msg = field === 'email' ? 'Email đã tồn tại' : field === 'phone' ? 'Số điện thoại đã tồn tại' : `${field} đã tồn tại`;
+      return res.status(400).json({ success: false, message: msg });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -70,6 +85,11 @@ router.put('/:id', async (req, res) => {
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ success: false, message: messages.join(', ') });
+    }
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      const msg = field === 'email' ? 'Email đã tồn tại' : field === 'phone' ? 'Số điện thoại đã tồn tại' : `${field} đã tồn tại`;
+      return res.status(400).json({ success: false, message: msg });
     }
     res.status(500).json({ success: false, message: error.message });
   }
