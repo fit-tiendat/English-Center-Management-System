@@ -44,10 +44,10 @@ const classSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ['planned', 'ongoing', 'completed', 'cancelled'],
+        values: ['Sắp mở', 'Đang học', 'Đã kết thúc', 'Đã hủy'],
         message: 'Trạng thái không hợp lệ',
       },
-      default: 'planned',
+      default: 'Sắp mở',
     },
   },
   {

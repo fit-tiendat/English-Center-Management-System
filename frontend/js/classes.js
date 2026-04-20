@@ -24,8 +24,8 @@ let allCoursesData = [];
 let activeCourseFilter = 'all';
 let activeStatusFilter = 'all';
 
-const STATUS_LABELS = { planned: 'Sắp mở', ongoing: 'Đang học', completed: 'Hoàn thành', cancelled: 'Đã hủy' };
-const STATUS_BADGE = { planned: 'badge-warning', ongoing: 'badge-active', completed: 'badge-inactive', cancelled: 'badge-inactive' };
+const STATUS_LABELS = { 'Sắp mở': 'Sắp mở', 'Đang học': 'Đang học', 'Đã kết thúc': 'Đã kết thúc', 'Đã hủy': 'Đã hủy' };
+const STATUS_BADGE = { 'Sắp mở': 'badge-warning', 'Đang học': 'badge-active', 'Đã kết thúc': 'badge-inactive', 'Đã hủy': 'badge-inactive' };
 
 function formatDateShort(dateStr) {
   if (!dateStr) return '—';
@@ -42,7 +42,7 @@ function renderFilters() {
   });
 
   // Status filters
-  var statuses = ['planned', 'ongoing', 'completed', 'cancelled'];
+  var statuses = ['Sắp mở', 'Đang học', 'Đã kết thúc', 'Đã hủy'];
   var statusFilters = [{ key: 'all', label: 'Tất cả', count: allClasses.length }];
   statuses.forEach(function(s) {
     statusFilters.push({ key: s, label: STATUS_LABELS[s], count: allClasses.filter(function(cl) { return cl.status === s; }).length });

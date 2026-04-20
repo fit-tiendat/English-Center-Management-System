@@ -13,7 +13,7 @@ async function addDerivedStatus(students) {
     c.students.forEach((sid) => {
       const id = sid.toString();
       classCountMap[id] = (classCountMap[id] || 0) + 1;
-      if (c.status === 'ongoing') ongoingStudentIds.add(id);
+      if (c.status === 'Đang học') ongoingStudentIds.add(id);
     });
   });
 
