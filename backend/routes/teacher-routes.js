@@ -12,7 +12,7 @@ async function addDerivedStatus(teachers) {
   allClasses.forEach((c) => {
     const tid = c.teacher.toString();
     classCountMap[tid] = (classCountMap[tid] || 0) + 1;
-    if (c.status === 'ongoing') ongoingTeacherIds.add(tid);
+    if (c.status === 'Đang học') ongoingTeacherIds.add(tid);
   });
 
   return teachers.map((t) => {
