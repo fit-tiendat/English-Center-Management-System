@@ -50,6 +50,14 @@
           <textarea id="description" placeholder="Mô tả ngắn về khóa học..."></textarea>
         </div>
 
+        <div class="form-group">
+          <label for="isActive">Đăng ký</label>
+          <select id="isActive">
+            <option value="true">Đang mở</option>
+            <option value="false">Đã đóng</option>
+          </select>
+        </div>
+
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" id="btn-submit">Thêm khóa học</button>
           <button type="button" class="btn btn-secondary" id="btn-cancel" style="display:none;" onclick="cancelEdit()">Hủy</button>
@@ -69,12 +77,13 @@
               <th>Trình độ</th>
               <th>Thời lượng</th>
               <th>Học phí</th>
-              <th>Trạng thái</th>
+              <th>Số lớp</th>
+              <th>Đăng ký</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody id="courses-tbody">
-            <tr><td colspan="6" class="text-center text-muted">Đang tải...</td></tr>
+            <tr><td colspan="7" class="text-center text-muted">Đang tải...</td></tr>
           </tbody>
         </table>
       </div>

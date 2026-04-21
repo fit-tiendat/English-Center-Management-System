@@ -69,12 +69,12 @@ function renderTable() {
   const students = getFilteredStudents();
 
   if (allStudents.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Chưa có học viên nào</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có học viên nào</td></tr>';
     return;
   }
 
   if (students.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Không có học viên phù hợp với bộ lọc này.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Không có học viên phù hợp với bộ lọc này.</td></tr>';
     return;
   }
 
@@ -87,6 +87,7 @@ function renderTable() {
       <td>${s.phone}</td>
       <td>${formatDate(s.dateOfBirth)}</td>
       <td>${s.level}</td>
+      <td>${s.classNames && s.classNames.length > 0 ? s.classNames.join(', ') : '<span class="text-muted">Chưa có</span>'}</td>
       <td>
         <span class="badge ${s.derivedStatus === 'Đang học' ? 'badge-active' : 'badge-inactive'}">
           ${s.derivedStatus}
@@ -104,11 +105,11 @@ function renderTable() {
 
 // --- Load danh sách students ---
 async function loadStudents() {
-  tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Đang tải...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Đang tải...</td></tr>';
 
   const result = await fetchJSON(STUDENTS_URL);
   if (!result.success) {
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Lỗi tải dữ liệu</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Lỗi tải dữ liệu</td></tr>';
     return;
   }
 

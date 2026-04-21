@@ -3,15 +3,19 @@ const router = express.Router();
 const Teacher = require('../models/teacher-model');
 const Class = require('../models/class-model');
 
-// Helper: tính derived status + classCount cho teachers
+// Helper: tính derived status + classCount + classNames cho teachers
 async function addDerivedStatus(teachers) {
-  const allClasses = await Class.find().select('teacher status');
+  const allClasses = await Class.find().select('teacher status name');
   const ongoingTeacherIds = new Set();
   const classCountMap = {};
+  const classNamesMap = {};
 
   allClasses.forEach((c) => {
+    if (!c.teacher) return;
     const tid = c.teacher.toString();
     classCountMap[tid] = (classCountMap[tid] || 0) + 1;
+    if (!classNamesMap[tid]) classNamesMap[tid] = [];
+    classNamesMap[tid].push(c.name);
     if (c.status === 'Đang học') ongoingTeacherIds.add(tid);
   });
 
@@ -20,6 +24,7 @@ async function addDerivedStatus(teachers) {
     const tid = t._id.toString();
     obj.derivedStatus = ongoingTeacherIds.has(tid) ? 'Đang dạy' : 'Chưa phân công';
     obj.classCount = classCountMap[tid] || 0;
+    obj.classNames = classNamesMap[tid] || [];
     return obj;
   });
 }
@@ -93,9 +98,18 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/teachers/:id — Xóa teacher
+// DELETE /api/teachers/:id — Xóa teacher (kiểm tra ràng buộc với lớp học)
 router.delete('/:id', async (req, res) => {
   try {
+    // Kiểm tra xem giảng viên có đang được gán vào lớp nào không
+    const linkedClasses = await Class.find({ teacher: req.params.id }).select('name');
+    if (linkedClasses.length > 0) {
+      const classNames = linkedClasses.map((c) => c.name).join(', ');
+      return res.status(400).json({
+        success: false,
+        message: `Không thể xóa! Giảng viên đang phụ trách ${linkedClasses.length} lớp: ${classNames}. Hãy đổi giảng viên cho các lớp này trước.`,
+      });
+    }
     const teacher = await Teacher.findByIdAndDelete(req.params.id);
     if (!teacher) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy giảng viên' });

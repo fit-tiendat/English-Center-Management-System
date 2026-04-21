@@ -3,16 +3,19 @@ const router = express.Router();
 const Student = require('../models/student-model');
 const Class = require('../models/class-model');
 
-// Helper: tính derived status + classCount cho students
+// Helper: tính derived status + classCount + classNames cho students
 async function addDerivedStatus(students) {
-  const allClasses = await Class.find().select('students status');
+  const allClasses = await Class.find().select('students status name');
   const ongoingStudentIds = new Set();
   const classCountMap = {};
+  const classNamesMap = {};
 
   allClasses.forEach((c) => {
     c.students.forEach((sid) => {
       const id = sid.toString();
       classCountMap[id] = (classCountMap[id] || 0) + 1;
+      if (!classNamesMap[id]) classNamesMap[id] = [];
+      classNamesMap[id].push(c.name);
       if (c.status === 'Đang học') ongoingStudentIds.add(id);
     });
   });
@@ -22,6 +25,7 @@ async function addDerivedStatus(students) {
     const sid = s._id.toString();
     obj.derivedStatus = ongoingStudentIds.has(sid) ? 'Đang học' : 'Chưa xếp lớp';
     obj.classCount = classCountMap[sid] || 0;
+    obj.classNames = classNamesMap[sid] || [];
     return obj;
   });
 }
